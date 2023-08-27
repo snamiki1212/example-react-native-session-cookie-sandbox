@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net index.ts",
+    "healthcheck": "curl -H 'Cookie:session=2' localhost:8000 -v",
+    "test": "deno test"
+  }
+}
