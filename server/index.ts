@@ -1,15 +1,18 @@
 import { Application } from "https://deno.land/x/oak@v12.6.0/mod.ts";
-import { extractSessionId } from "./lib.ts"
+import { extractSessionId, buildNextSessionId } from "./lib.ts"
 
 const app = new Application();
 
-const key = "session";
-
 app.use((ctx) => {
-  const raw = ctx.request.headers.get('cookie');
-  const sessionIdNum = extractSessionId(raw, new RegExp(`${key}=(.+);`))
   ctx.response.body = "Hello World!";
-  ctx.response.headers.set('Set-Cookie', `${key}=${sessionIdNum + 1}; `);
+
+  {
+    // cookie
+    const raw = ctx.request.headers.get('cookie');
+    const reqSessionId = extractSessionId(raw);
+    const resSessionId = buildNextSessionId(reqSessionId);
+    ctx.response.headers.set('Set-Cookie', resSessionId);
+  }
 });
 
 await app.listen({ port: 8000 });
