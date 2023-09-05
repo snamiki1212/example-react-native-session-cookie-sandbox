@@ -15,6 +15,8 @@ type Item = {
   fetchedAt: string; // ISO string;
 };
 
+const prettyRenderJson = (json: any): string => JSON.stringify(json, null, 2);
+
 export const Fetcher = () => {
   const [list, setList] = React.useState<Item[]>([]);
   const onPressFetch = async () => {
@@ -39,7 +41,7 @@ export const Fetcher = () => {
               <View style={styles.row} key={item.fetchedAt}>
                 <Text style={styles.rowPrimaryText}>{item.fetchedAt}</Text>
                 <View style={styles.rowTextPadding} />
-                <Text>{JSON.stringify(item.data)}</Text>
+                <Text>{prettyRenderJson(item.data)}</Text>
               </View>
             );
           }}
