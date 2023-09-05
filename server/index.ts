@@ -11,7 +11,8 @@ app.use((ctx) => {
     const raw = ctx.request.headers.get('cookie');
     const reqSessionId = extractSessionId(raw);
     const resSessionId = buildNextSessionId(reqSessionId);
-    ctx.response.headers.set('Set-Cookie', resSessionId);
+    const dummyCookieVal = "dummy=123; "
+    ctx.response.headers.set('Set-Cookie', resSessionId + dummyCookieVal);
   }
 });
 
