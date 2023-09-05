@@ -1,20 +1,68 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+} from 'react-native';
 
-const url = 'localhost:8080';
-export const Fethcer = () => {
-  const [res, setRes] = React.useState<any[]>([]);
+const url = 'http://localhost:8000';
+
+type Item = {
+  data: any; // response data;
+  fetchedAt: string; // ISO string;
+};
+
+export const Fetcher = () => {
+  const [list, setList] = React.useState<Item[]>([]);
   const onPressFetch = async () => {
-    const result = await fetch(url, {}).then(r => r.json());
-    setRes(prev => [...prev, result]);
+    const now = new Date().toISOString();
+    const result = await fetch(url, {}).catch(err => {
+      console.error(err);
+    });
+    if (!result) {
+      return;
+    }
+    setList(prev => [{data: result, fetchedAt: now}, ...prev]);
   };
   return (
     <View>
-      <Text>Fetcher</Text>
       <Button title="Fetch" onPress={onPressFetch} />
-      {res.map((r, i) => (
-        <Text key={i}>{JSON.stringify(r)}</Text>
-      ))}
+      <SafeAreaView style={styles.listContainer}>
+        <FlatList
+          data={list}
+          keyExtractor={item => item.fetchedAt}
+          renderItem={({item}) => {
+            return (
+              <View style={styles.row} key={item.fetchedAt}>
+                <Text style={styles.rowPrimaryText}>{item.fetchedAt}</Text>
+                <View style={styles.rowTextPadding} />
+                <Text>{JSON.stringify(item.data)}</Text>
+              </View>
+            );
+          }}
+        />
+      </SafeAreaView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  listContainer: {
+    flex: 1,
+  },
+  row: {
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'lightgray',
+  },
+  rowPrimaryText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  rowTextPadding: {
+    padding: 4,
+  },
+});
